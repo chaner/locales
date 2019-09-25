@@ -18,7 +18,7 @@ const DEFAULT_OPTIONS = {
   writeCookie: true,
   cookieMaxAge: '1y',
   dir: undefined,
-  dirs: [ path.join(process.cwd(), 'locales') ],
+  dirs: [path.join(process.cwd(), 'locales')],
   functionName: '__',
 };
 
@@ -75,6 +75,10 @@ module.exports = function (app, options) {
     console.warn('[koa-locales] will override exists "%s" function on app', functionName);
   }
 
+  function looseLocale(locale) {
+    return locale.split('-')[0];
+  }
+
   function gettext(locale, key, value) {
     if (arguments.length === 0 || arguments.length === 1) {
       // __()
@@ -82,7 +86,7 @@ module.exports = function (app, options) {
       return '';
     }
 
-    const resource = resources[locale] || {};
+    const resource = resources[locale] || looseLocale(locale)[locale] || {};
 
     let text = resource[key];
     if (text === undefined) {
@@ -122,7 +126,7 @@ module.exports = function (app, options) {
     // __(locale, key, value1, ...)
     const args = new Array(arguments.length - 1);
     args[0] = text;
-    for(let i = 2; i < arguments.length; i++) {
+    for (let i = 2; i < arguments.length; i++) {
       args[i - 1] = arguments[i];
     }
     return util.format.apply(util, args);
@@ -145,7 +149,7 @@ module.exports = function (app, options) {
     }
     const args = new Array(arguments.length + 1);
     args[0] = locale;
-    for(let i = 0; i < arguments.length; i++) {
+    for (let i = 0; i < arguments.length; i++) {
       args[i + 1] = arguments[i];
     }
     return gettext.apply(this, args);
@@ -293,8 +297,8 @@ function flattening(data) {
 
   const result = {};
 
-  function deepFlat (data, keys) {
-    Object.keys(data).forEach(function(key) {
+  function deepFlat(data, keys) {
+    Object.keys(data).forEach(function (key) {
       const value = data[key];
       const k = keys ? keys + '.' + key : key;
       if (isObject(value)) {
