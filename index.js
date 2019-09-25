@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const ms = require('humanize-ms');
 const assign = require('object-assign');
+const yaml = require('js-yaml');
 
 const DEFAULT_OPTIONS = {
   defaultLocale: 'en-US',
@@ -62,6 +63,8 @@ module.exports = function (app, options) {
         resource = flattening(require(filepath));
       } else if (name.endsWith('.properties')) {
         resource = ini.parse(fs.readFileSync(filepath, 'utf8'));
+      } else if (name.endsWith('.yml') || name.endsWith('.yaml')) {
+        resource = flattening(yaml.safeLoad(fs.readFileSync(filepath, 'utf8')));
       }
 
       resources[locale] = resources[locale] || {};
